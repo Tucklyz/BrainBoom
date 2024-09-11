@@ -1,4 +1,4 @@
-module example.com/PROJECT-SA
+module example.com/brainboom
 
 go 1.22.5
 

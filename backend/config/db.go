@@ -6,7 +6,7 @@ import (
 
 	"gorm.io/driver/sqlite"
 	"gorm.io/gorm"    
-    "PROJECT-SA/backend/entity" 
+    "example.com/brainboom/entity" 
 
 )
 
@@ -15,7 +15,6 @@ var db *gorm.DB
 func DB() *gorm.DB {
 	return db
 }
-
 func ConnectionDB() {
 	var err error
 	db, err = gorm.Open(sqlite.Open("sa.db?cache=shared"), &gorm.Config{})

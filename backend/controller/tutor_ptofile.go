@@ -92,6 +92,7 @@ func DeleteTutorProfile(c *gin.Context) {
 	}
 	c.JSON(http.StatusOK, gin.H{"message": "Deleted successfully"})
 }
+
 package controller
 
 import (
