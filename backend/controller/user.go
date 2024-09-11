@@ -3,8 +3,8 @@ package controller
 import (
 	"net/http"
 	"github.com/gin-gonic/gin"
-	"user-system/backend/config"
-	"user-system/backend/entity"
+	"github.com/Tucklyz/BrainBoom/config"
+	"github.com/Tucklyz/BrainBoom/entity"
 	"github.com/go-playground/validator/v10"
 )
 
@@ -44,7 +44,7 @@ func CreateUser(c *gin.Context) {
 		Email:     user.Email,
 		Password:  hashedPassword,
 		Birthday:  user.Birthday,
-		RoleID:    user.RoleID,
+		//RoleID:    user.RoleID,
 	}
 
 	// บันทึก

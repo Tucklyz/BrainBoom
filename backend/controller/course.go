@@ -1,0 +1,139 @@
+package controller
+
+import (
+	"net/http"
+
+	"github.com/gin-gonic/gin"
+	"github.com/Tucklyz/BrainBoom/config"
+	"github.com/Tucklyz/BrainBoom/entity"
+	"gorm.io/gorm"
+)
+
+// GET /courses - List all courses
+func ListCourse(c *gin.Context) {
+	var courses []entity.Course
+
+	db := config.DB()
+	db.Find(&courses)
+
+	c.JSON(http.StatusOK, courses)
+}
+
+// GET /courses/:id - Retrieve a single course by ID
+func GetCourse(c *gin.Context) {
+	var course entity.Course
+	id := c.Param("id")
+
+	db := config.DB()
+	if err := db.First(&course, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Course not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, course)
+}
+
+// POST /courses - Create a new course
+func CreateCourse(c *gin.Context) {
+	var course entity.Course
+
+	// Bind JSON input to the course object
+	if err := c.ShouldBindJSON(&course); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Validate input
+	if err := validate.Struct(course); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed"})
+		return
+	}
+
+	db := config.DB()
+
+	// Create a new course
+	co := entity.Course{
+		Title:            course.Title,
+		ProfilePicture:   course.ProfilePicture,
+		Price:            course.Price,
+		TeachingPlatform: course.TeachingPlatform,
+		Description:      course.Description,
+		Duration:         course.Duration,
+	}
+
+	// Save course to the database
+	if err := db.Create(&co).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusCreated, gin.H{"message": "Course created successfully", "data": co})
+}
+
+// PUT /courses/:id - Update an existing course by ID
+func UpdateCourse(c *gin.Context) {
+	var course entity.Course
+	id := c.Param("id")
+
+	db := config.DB()
+
+	// Retrieve the existing course
+	if err := db.First(&course, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Course not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Bind updated data to the existing course object
+	if err := c.ShouldBindJSON(&course); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Validate the updated data
+	if err := validate.Struct(course); err != nil {
+		c.JSON(http.StatusBadRequest, gin.H{"error": "Validation failed"})
+		return
+	}
+
+	// Save the updated course
+	if err := db.Save(&course).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Course updated successfully", "data": course})
+}
+
+// DELETE /courses/:id - Delete a course by ID
+func DeleteCourse(c *gin.Context) {
+	var course entity.Course
+	id := c.Param("id")
+
+	db := config.DB()
+
+	// Check if the course exists
+	if err := db.First(&course, id).Error; err != nil {
+		if err == gorm.ErrRecordNotFound {
+			c.JSON(http.StatusNotFound, gin.H{"error": "Course not found"})
+			return
+		}
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	// Delete the course
+	if err := db.Delete(&course).Error; err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		return
+	}
+
+	c.JSON(http.StatusOK, gin.H{"message": "Course deleted successfully"})
+}
