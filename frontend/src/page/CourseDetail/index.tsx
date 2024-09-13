@@ -116,7 +116,7 @@ function CourseDetail() {
                   fontWeight: 'bold',
                 }}
               >
-                $99999999999999.99 Bath
+                1500.00 Bath
               </Text>
               <Button
                 type="primary"

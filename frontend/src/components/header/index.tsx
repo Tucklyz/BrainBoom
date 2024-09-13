@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Layout, Avatar, ConfigProvider, MenuProps } from 'antd';
-import { BookOutlined, UserOutlined, ShoppingCartOutlined, ShopOutlined } from '@ant-design/icons';
+import { BookOutlined, UserOutlined, ShoppingCartOutlined, ShopOutlined, SearchOutlined } from '@ant-design/icons';
 import Logo from '../../assets/Logo.png';
 import { Link, useLocation  } from 'react-router-dom';
 import { Menu } from 'antd';
@@ -23,6 +23,11 @@ const items: MenuItem[] = [
     label: <Link to="/myCourses">คอร์สของฉัน</Link>, 
     key: 'myCourse',
     icon: <BookOutlined />,
+  },
+  {
+    label: <Link to="/search">ค้นหา</Link>, 
+    key: 'search',
+    icon: <SearchOutlined />,
   },
 ];
 
