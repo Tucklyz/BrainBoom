@@ -15,7 +15,7 @@ const items: MenuItem[] = [
     icon: <ShoppingCartOutlined />,
   },
   {
-    label: <Link to="/tuter">ขายคอร์ส</Link>, 
+    label: <Link to="/tutor">ขายคอร์ส</Link>, 
     key: 'tuterCourse',
     icon: <ShopOutlined />,
   },

@@ -32,7 +32,12 @@ func SetupDatabase() error {
 	// Automatically migrate the schema for all necessary entities
 	err := db.AutoMigrate(
 		&entity.User{},
-		&entity.UserRole{}, // Ensure UserRole is migrated as well
+		&entity.UserRole{},
+		&entity.Course{},
+		&entity.TutorProfile{},
+		&entity.CourseCategory{},
+		&entity.Review{},
+		&entity.Payment{},
 	)
 	if err != nil {
 		return fmt.Errorf("failed to migrate database schema: %w", err)
@@ -65,11 +70,47 @@ func SetupDatabase() error {
 		Username:  "Parichat",
 		Password:  hashedPassword,
 		Birthday:  birthDay,
-		UserRoleID: func(v uint) *uint { return &v }(1001),
+		UserRoleID: func(v uint) *uint { return &v }(1001), // Convert uint to *uint
 	}
 
 	if err := db.FirstOrCreate(user, &entity.User{Username: "Parichat"}).Error; err != nil {
 		return fmt.Errorf("failed to create or find user: %w", err)
+	}
+
+	// Seed a default Course Category
+	var courseCategory entity.CourseCategory
+	if err := db.Where("category_name = ?", "แนะนำสำหรับคุณ").First(&courseCategory).Error; err != nil {
+		courseCategory = entity.CourseCategory{CategoryName: "แนะนำสำหรับคุณ"}
+		if err := db.Create(&courseCategory).Error; err != nil {
+			return fmt.Errorf("failed to create CourseCategory: %w", err)
+		}
+	}
+
+	// Seed a default Tutor Profile
+	tutorProfile := &entity.TutorProfile{
+		UserID: func(v uint) *uint { return &v }(user.ID), // Convert uint to *uint
+		Bio:    "Experienced software engineer with expertise in multiple programming languages.",
+	}
+	if err := db.FirstOrCreate(tutorProfile, &entity.TutorProfile{UserID: tutorProfile.UserID}).Error; err != nil {
+		return fmt.Errorf("failed to create or find tutor profile: %w", err)
+	}
+
+	// Seed default Courses
+	for i := 1; i <= 10; i++ {
+		course := &entity.Course{
+			Title:            fmt.Sprintf("Course %d", i),
+			ProfilePicture:   []byte{},
+			Price:            float32(1999 + i*100),
+			TeachingPlatform: "Online",
+			Description:      fmt.Sprintf("This course provides comprehensive content on various topics. Course number %d.", i),
+			Duration:         uint(40 + i), 
+			TutorProfileID:   tutorProfile.UserID,
+			CourseCategoryID: &courseCategory.ID,
+		}
+	
+		if err := db.FirstOrCreate(course, &entity.Course{Title: course.Title}).Error; err != nil {
+			return fmt.Errorf("failed to create or find course %d: %w", i, err)
+		}
 	}
 
 	return nil

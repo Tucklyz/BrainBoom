@@ -137,3 +137,43 @@ func DeleteCourse(c *gin.Context) {
 
 	c.JSON(http.StatusOK, gin.H{"message": "Course deleted successfully"})
 }
+
+func GetCourseByCategoryID(c *gin.Context) {
+    id := c.Param("id")
+    var course []entity.Course
+
+    db := config.DB()
+    results := db.Preload("CourseCategory").Where("course_category_id = ?", id).Find(&course)
+
+    if results.Error != nil {
+        
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Database query failed"})
+        return
+    }
+    if len(course) == 0 {
+    
+        c.JSON(http.StatusNoContent, gin.H{})
+        return
+    }
+    c.JSON(http.StatusOK, course)
+}
+
+func GetCourseByTutorID(c *gin.Context) {
+    id := c.Param("id")
+    var course []entity.Course
+
+    db := config.DB()
+    results := db.Preload("TutorProfile").Where("tutor_profile_id = ?", id).Find(&course)
+
+    if results.Error != nil {
+        
+        c.JSON(http.StatusInternalServerError, gin.H{"error": "Database query failed"})
+        return
+    }
+    if len(course) == 0 {
+    
+        c.JSON(http.StatusNoContent, gin.H{})
+        return
+    }
+    c.JSON(http.StatusOK, course)
+}

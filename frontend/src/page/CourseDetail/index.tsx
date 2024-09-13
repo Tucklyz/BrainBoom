@@ -1,37 +1,22 @@
+//import { useEffect, useState } from 'react';
 import { Card, Button, Typography, Divider } from 'antd';
-import { useNavigate } from 'react-router-dom';
+import { useNavigate, useLocation  } from 'react-router-dom';
 import HeaderComponent from '../../components/header';
+import moment from 'moment';
 
 const { Title, Text } = Typography;
 
-// ข้อมูลรีวิว
-const reviews = [
-  {
-    id: 1,
-    name: 'John Doe',
-    rating: 5,
-    comment: 'This course is excellent. The content is well-organized and easy to follow. Highly recommended!',
-    imageUrl: 'https://via.placeholder.com/100x100'
-  },
-  {
-    id: 2,
-    name: 'Jane Smith',
-    rating: 4,
-    comment: 'Very informative and engaging. I learned a lot from this course.',
-    imageUrl: 'https://via.placeholder.com/100x100'
-  },
-  {
-    id: 3,
-    name: 'Alice Johnson',
-    rating: 4.5,
-    comment: 'Great course with practical examples. The instructor was very knowledgeable.',
-    imageUrl: 'https://via.placeholder.com/100x100'
-  }
-];
-
 function CourseDetail() {
   const navigate = useNavigate();
+  const location = useLocation();
+  const course = location.state?.course;
+  console.log(course.Title);
 
+  const updatedAt = course.UpdatedAt;
+  const formattedDate = moment(updatedAt).format('DD MMMM YYYY');
+  const formattedTime = moment(updatedAt).format('HH:mm');
+
+  // Your existing code with course data rendering
   return (
     <>
       <HeaderComponent />
@@ -74,7 +59,7 @@ function CourseDetail() {
               <Card
                 cover={
                   <img
-                    src="https://via.placeholder.com/300x300"
+                    src={course.ProfilePicture || "https://via.placeholder.com/300x300"}
                     alt="Course"
                     style={{
                       borderRadius: '10px',
@@ -92,11 +77,11 @@ function CourseDetail() {
                   borderRadius: '20px',
                   boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
                 }}
-                bodyStyle={{ padding: '10px 25px' }}
+                styles={{body: { padding: '10px 25px' }}}
               >
-                <Text type="secondary">Created by: Macc</Text>
+                <Text type="secondary">Created by: {course.TutorProfileID || "Unknown"}</Text>
                 <br />
-                <Text type="secondary">Updated: Date</Text>
+                <Text type="secondary">Updated: {formattedDate} {formattedTime || "N/A"}</Text>
               </Card>
             </div>
 
@@ -108,7 +93,7 @@ function CourseDetail() {
                 padding: '20px',
               }}
             >
-              <Title level={2}>The React Course 2024</Title>
+              <Title level={2}>{course.Title || "Course Title"}</Title>
               <Text
                 style={{
                   fontSize: '24px',
@@ -116,7 +101,7 @@ function CourseDetail() {
                   fontWeight: 'bold',
                 }}
               >
-                1500.00 Bath
+                {course.Price?.toFixed(2) || "0.00"} Bath
               </Text>
               <Button
                 type="primary"
@@ -147,15 +132,10 @@ function CourseDetail() {
               </Text>
 
               <Text style={{ lineHeight: '2.0' }}>
-                Continue studying: 24 Hours
+                เวลาในการเรียน: {course.Duration || "N/A"} ชั่วโมง
                 <br />
-                Number of chapters: 12 chapters
+                รูปแบบในการเรียน: {course.TeachingPlatform || "N/A"}
                 <br />
-                Study format: Online
-                <br />
-                Requirements: Students must attend classes on time
-                <br />
-                Things to prepare: Students should bring their notebooks
               </Text>
 
               <Divider style={{ margin: '20px' }} />
@@ -170,17 +150,7 @@ function CourseDetail() {
                 }}
               >
                 <Text>
-                  เรียนรู้การพัฒนาเว็บแอปพลิเคชันที่มีประสิทธิภาพด้วย React ซึ่งเป็นไลบรารีที่ได้รับความนิยมสูงสุดในการสร้างส่วนติดต่อผู้ใช้ คอร์สนี้เหมาะสำหรับนักพัฒนาทุกระดับที่ต้องการพัฒนาทักษะในการเขียนโค้ดด้วย React<br/><br/>
-
-                  พื้นฐานของ React และ JSX<br/>
-                  การจัดการสถานะ (State Management)<br/>
-                  การใช้ Hooks และ Context API<br/>
-                  การเชื่อมต่อกับ API ภายนอก<br/>
-                  การทดสอบและดีบั๊กแอปพลิเคชัน<br/>
-                  การปรับปรุงประสิทธิภาพและการดีไซน์<br/>
-                  ข้อกำหนด: นักเรียนควรมีความรู้พื้นฐานเกี่ยวกับ HTML, CSS, และ JavaScript<br/><br/>
-
-                  ผลลัพธ์ที่คาดหวัง: หลังจากเรียนคอร์สนี้เสร็จสิ้น นักเรียนจะสามารถสร้างและปรับปรุงแอปพลิเคชัน React ได้อย่างมั่นใจ รวมถึงสามารถจัดการและปรับปรุงแอปพลิเคชันที่มีการใช้งานจริง<br/>
+                  {course.Description || "Course description not available."}
                 </Text>
               </div>
             </div>
@@ -202,7 +172,7 @@ function CourseDetail() {
                 gap: '15px',
               }}
             >
-              {reviews.map((review) => (
+              {/* {reviews.map((review) => (
                 <Card
                   key={review.id}
                   hoverable
@@ -245,7 +215,7 @@ function CourseDetail() {
                     </div>
                   </div>
                 </Card>
-              ))}
+              ))} */}
             </div>
             <div
               style={{

@@ -1,10 +1,10 @@
 export interface Payment {
 
-    id?: number; 
+    ID?: number; 
 
-    amount: number; 
+    Amount: number; 
 
-    enrollmentDate: Date; 
+    EnrollmentDate: Date; 
 
     UserID?: number;
 

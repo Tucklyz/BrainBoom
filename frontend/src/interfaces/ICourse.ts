@@ -1,21 +1,23 @@
 // course.interface.ts
 export interface CourseInterface {
 
-    id?: number; 
+    ID?: number;
 
-    title: string;
+    UpdatedAt?: string;
 
-    profilePicture: string;
+    Title: string;
 
-    price: number;
+    ProfilePicture: string;
 
-    teachingPlatform: string;
+    Price: number;
 
-    description: string;
+    TeachingPlatform: string;
 
-    duration: number;
+    Description: string;
 
-    UserID?: number;
+    Duration: number;
+
+    TutorProfileID?: number;
 
     CategoryID?: number;
 

@@ -1,21 +1,42 @@
+import { useState, useEffect } from 'react';
 import HeaderComponent from '../../components/header';
-import { Button, Input, Card, Row, Col, Typography, Space, Rate } from 'antd';
-import { StarFilled, EditOutlined, DeleteOutlined } from '@ant-design/icons';
+import { Button, Input, Card, Row, Col, Typography, Space } from 'antd';
+import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Link } from 'react-router-dom';
+import { GetCourseByTutorID } from '../../services/https';
+import { CourseInterface } from '../../interfaces/ICourse';
 
 const { Search } = Input;
 const { Text, Title } = Typography;
 
-const cardsData = Array.from({ length: 10 }, (_, index) => ({
-    id: index + 1,
-    name: `Course ${index + 1}`,
-    countstd: (Math.random() * 500).toFixed(0),
-    rating: parseFloat((Math.random() * 5).toFixed(1)),
-    price: (Math.random() * 2000).toFixed(2),
-    imageUrl: "https://via.placeholder.com/150x150"
-}));
+function Tutor() {
+  const [courses, setCourses] = useState<CourseInterface[]>([]);
+  const [loading, setLoading] = useState<boolean>(true);
+  const tutorID = 1; // เปลี่ยนเป็น tutor ID ที่ต้องการ
 
-function Tuter() {
+  useEffect(() => {
+    const fetchCourses = async () => {
+      try {
+        const data = await GetCourseByTutorID(tutorID);
+        if (Array.isArray(data)) {
+          setCourses(data);
+        } else {
+          console.error('Received data is not an array:', data);
+        }
+      } catch (error) {
+        console.error('Error fetching courses:', error);
+      } finally {
+        setLoading(false);
+      }
+    };
+
+    fetchCourses();
+  }, [tutorID]);
+
+  if (loading) {
+    return <p>Loading...</p>;
+  }
+
   return (
     <>
       <HeaderComponent />
@@ -49,7 +70,7 @@ function Tuter() {
                 boxShadow: '0 4px 8px rgba(0, 0, 0, 0.1)',
               }}
             />
-            <Link to="/tuter/create">
+            <Link to="/tutor/create">
               <Button
                 type="primary"
                 style={{
@@ -66,57 +87,54 @@ function Tuter() {
           </Space>
 
           <Row gutter={[15, 15]} justify="center">
-            {cardsData.map(card => (
+            {courses.map(course => (
               <Col
                 xs={24} 
                 sm={24} 
                 md={12}
                 lg={12} 
-                key={card.id}
+                key={course.ID}
               >
-                  <Card
-                    style={{
-                      borderRadius: '20px',
-                      boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
-                      transition: 'transform 0.3s',
-                      height: '100%', 
-                    }}
-
-                    bodyStyle={{padding:'15px',}}
-                    hoverable
-                    actions={[
-                      <Link to="/tuter/edit"><EditOutlined key="edit" /></Link>,
-                      <DeleteOutlined key="delete" />,
-                    ]}
-                    >
-                  <Link to={`/tuter/${card.id}`} key={card.id} style={{ textDecoration: "none" }}>
+                <Card
+                  style={{
+                    borderRadius: '20px',
+                    boxShadow: '0 4px 12px rgba(0, 0, 0, 0.15)',
+                    transition: 'transform 0.3s',
+                    height: '100%', 
+                  }}
+                  hoverable
+                  actions={[
+                    <Link to={`/tutor/edit/${course.ID}`} key="edit"><EditOutlined /></Link>,
+                    <DeleteOutlined key="delete" />,
+                  ]}
+                >
+                  <Link to={`/tutor/${course.ID}`} style={{ textDecoration: "none" }}>
                     <Row gutter={15} align="top">
                       <Col span={7}>
                         <img
-                          alt={card.name}
-                          src={card.imageUrl}
+                          alt={course.Title}
+                          src={course.ProfilePicture ? course.ProfilePicture : "https://via.placeholder.com/200x200"}
                           style={{
                             borderRadius: '20px',
                             width: '100px',
                             height: '100px',
                             objectFit: 'cover',
                           }}
-                          />
+                        />
                       </Col>
-                      <Col span={16}>
+                      <Col span={17}>
                         <Space direction="vertical" style={{ width: '100%' }}>
-                          <Title level={4} style={{ color: '#333d51' }}>{card.name}</Title>
-                          <Text style={{ color: '#7d7d7d' }}>จำนวนผู้สมัคร: {card.countstd}</Text>
+                          <Title level={4} style={{ color: '#333d51' }}>{course.Title}</Title>
+                          <Text style={{ color: '#7d7d7d' }}>จำนวนผู้สมัคร: {/*{course.CountStd || 0}*/}</Text>
                           <Space>
-                            <Rate allowHalf disabled defaultValue={card.rating} character={<StarFilled />} />
-                            <Text>{card.rating}</Text>
+                            <Text>5.0{/*{course.Rating || 'N/A'}*/}</Text>
                           </Space>
-                          <Text strong style={{ color: '#ff4500' }}>฿{card.price}</Text>
+                          <Text strong style={{ color: '#ff4500' }}>฿{course.Price}</Text>
                         </Space>
                       </Col>
                     </Row>
                   </Link>
-                  </Card>
+                </Card>
               </Col>
             ))}
           </Row>
@@ -126,4 +144,4 @@ function Tuter() {
   );
 }
 
-export default Tuter;
+export default Tutor;

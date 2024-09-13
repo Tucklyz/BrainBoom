@@ -1,119 +1,138 @@
-import { UsersInterface } from "../../interfaces/IUser";
-
-import { SignInInterface } from "../../interfaces/SignIn";
-
-import axios from "axios";
+import {CourseInterface} from "../../interfaces/ICourse"; 
 
 const apiUrl = "http://localhost:8000";
 
-const Authorization = localStorage.getItem("token");
+async function GetCourses() {
+  const requestOptions = {
+    method: "GET",
+    headers: {
+      "Content-Type": "application/json",
+    },
+  };
 
-const Bearer = localStorage.getItem("token_type");
+  const res = await fetch(`${apiUrl}/courses`, requestOptions)
+    .then((res) => {
+      if (res.status === 200) {
+        return res.json();
+      } else {
+        throw new Error('Response is not in JSON format');
+      }
+    });
+
+  return res;
+}
 
 
-const requestOptions = {
+async function CreateCourse(data: CourseInterface) {
+  const requestOptions = {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
 
-  headers: {
+  const res = await fetch(`${apiUrl}/courses`, requestOptions)
+    .then((res) => {
+      if (res.status == 201) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
 
-    "Content-Type": "application/json",
+  return res;
+}
 
-    Authorization: `${Bearer} ${Authorization}`,
+async function UpdateCourse(data: CourseInterface) {
+  const requestOptions = {
+    method: "PATCH",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify(data),
+  };
 
-  },
+  const res = await fetch(`${apiUrl}/courses`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
 
+  return res;
+}
+
+async function GetCourseById(id: number) {
+  const requestOptions = {
+    method: "GET"
+  };
+
+  const res = await fetch(`${apiUrl}/courses/${id}`, requestOptions)
+    .then((res) => {
+      if (res.status == 200) {
+        return res.json();
+      } else {
+        return false;
+      }
+    });
+
+  return res;
+}
+
+async function GetCourseByCategoryID(categoryID: number){
+  try {
+      const response = await fetch(`/courses/category/${categoryID}`);
+      if (!response.ok) throw new Error('การตอบสนองของเครือข่ายไม่ถูกต้อง');
+      
+      const contentType = response.headers.get('content-type');
+      if (contentType && contentType.includes('application/json')) {
+          return await response.json();
+      } else {
+          throw new Error('การตอบสนองไม่ใช่ JSON');
+      }
+  } catch (error) {
+      console.error('ข้อผิดพลาดในการดึงข้อมูลคอร์ส:', error);
+      return false;
+  }
 };
 
+async function GetCourseByTutorID(tutorID: number) {
+  try {
+    const response = await fetch(`${apiUrl}/tutor/${tutorID}`); 
 
-async function SignIn(data: SignInInterface) {
+    if (!response.ok) {
+      throw new Error(`Network response was not ok: ${response.statusText}`);
+    }
 
-  return await axios
-
-    .post(`${apiUrl}/signin`, data, requestOptions)
-
-    .then((res) => res)
-
-    .catch((e) => e.response);
-
+    const contentType = response.headers.get('Content-Type');
+    if (contentType && contentType.includes('application/json')) {
+      const data = await response.json();
+      
+      if (Array.isArray(data)) {
+        return data;
+      } else {
+        throw new Error('Received data is not an array');
+      }
+    } else {
+      throw new Error('Response is not JSON');
+    }
+  } catch (error) {
+    console.error('Error fetching courses:', error);
+    return []; // คืนค่าที่เป็น Array แทน `false`
+  }
 }
-
-
-async function GetUsers() {
-
-  return await axios
-
-    .get(`${apiUrl}/users`, requestOptions)
-
-    .then((res) => res)
-
-    .catch((e) => e.response);
-
-}
-
-
-async function GetUsersById(id: string) {
-
-  return await axios
-
-    .get(`${apiUrl}/user/${id}`, requestOptions)
-
-    .then((res) => res)
-
-    .catch((e) => e.response);
-
-}
-
-
-async function UpdateUsersById(id: string, data: UsersInterface) {
-
-  return await axios
-
-    .put(`${apiUrl}/user/${id}`, data, requestOptions)
-
-    .then((res) => res)
-
-    .catch((e) => e.response);
-
-}
-
-
-async function DeleteUsersById(id: string) {
-
-  return await axios
-
-    .delete(`${apiUrl}/user/${id}`, requestOptions)
-
-    .then((res) => res)
-
-    .catch((e) => e.response);
-
-}
-
-
-async function CreateUser(data: UsersInterface) {
-
-  return await axios
-
-    .post(`${apiUrl}/signup`, data, requestOptions)
-
-    .then((res) => res)
-
-    .catch((e) => e.response);
-
-}
-
 
 export {
 
-  SignIn,
+  GetCourses,
 
-  GetUsers,
+  CreateCourse,
 
-  GetUsersById,
+  UpdateCourse,
 
-  UpdateUsersById,
+  GetCourseById,
 
-  DeleteUsersById,
+  GetCourseByCategoryID,
 
-  CreateUser,
+  GetCourseByTutorID,
 
 };
