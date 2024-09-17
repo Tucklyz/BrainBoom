@@ -48,9 +48,9 @@ function Course() {
   if (error) return <p>{error}</p>;
 
   const categories = [
-    { id: 1, title: "แนะนำสำหรับคุณ" },
+    { id: 1, title: "คอร์สทั้งหมด" },
     { id: 2, title: "ยอดนิยม" },
-    { id: 3, title: "คอร์สของฉัน" },
+    { id: 3, title: "แนะนำสำหรับคุณ" },
   ];
 
   return (

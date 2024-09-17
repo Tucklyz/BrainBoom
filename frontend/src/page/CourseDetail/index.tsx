@@ -228,7 +228,7 @@ function CourseDetail() {
             >
               <Button
                 type="link"
-                style={{
+                style={{  
                   display: 'block',
                   textAlign: 'center',
                   color: '#002A48',

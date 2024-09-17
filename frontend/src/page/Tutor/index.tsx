@@ -2,7 +2,7 @@ import { useState, useEffect } from 'react';
 import HeaderComponent from '../../components/header';
 import { Button, Input, Card, Row, Col, Typography, Space } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
-import { Link } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { GetCourseByTutorID } from '../../services/https';
 import { CourseInterface } from '../../interfaces/ICourse';
 
@@ -13,6 +13,12 @@ function Tutor() {
   const [courses, setCourses] = useState<CourseInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
   const tutorID = 1; // เปลี่ยนเป็น tutor ID ที่ต้องการ
+
+  const navigate = useNavigate();
+
+  const handleCourseClick = (course: CourseInterface) => {
+    navigate(`/tutor/${course.ID}`, { state: { course } });
+  };
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -108,7 +114,7 @@ function Tutor() {
                     <DeleteOutlined key="delete" />,
                   ]}
                 >
-                  <Link to={`/tutor/${course.ID}`} style={{ textDecoration: "none" }}>
+                  <div key={course.ID} onClick={() => handleCourseClick(course)}>
                     <Row gutter={15} align="top">
                       <Col span={7}>
                         <img
@@ -133,7 +139,7 @@ function Tutor() {
                         </Space>
                       </Col>
                     </Row>
-                  </Link>
+                  </div>
                 </Card>
               </Col>
             ))}
