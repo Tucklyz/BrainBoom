@@ -121,6 +121,23 @@ async function GetCourseByTutorID(tutorID: number) {
   }
 }
 
+async function DeleteCourse(id: number) {
+  try {
+    const response = await fetch(`${apiUrl}/courses/${id}`, {
+      method: 'DELETE',
+    });
+
+    if (response.ok) {
+      console.log('Course deleted successfully');
+    } else {
+      console.error('Failed to delete course');
+    }
+  } catch (error) {
+    console.error('Error:', error);
+  }
+}
+
+
 export {
 
   GetCourses,
@@ -134,5 +151,7 @@ export {
   GetCourseByCategoryID,
 
   GetCourseByTutorID,
+
+  DeleteCourse,
 
 };

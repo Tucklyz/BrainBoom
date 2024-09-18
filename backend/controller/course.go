@@ -112,31 +112,38 @@ func UpdateCourse(c *gin.Context) {
 	c.JSON(http.StatusOK, gin.H{"message": "Course updated successfully", "data": course})
 }
 
-// DELETE /courses/:id - Delete a course by ID
 func DeleteCourse(c *gin.Context) {
 	var course entity.Course
 	id := c.Param("id")
 
 	db := config.DB()
 
-	// Check if the course exists
-	if err := db.First(&course, id).Error; err != nil {
-		if err == gorm.ErrRecordNotFound {
-			c.JSON(http.StatusNotFound, gin.H{"error": "Course not found"})
-			return
+	err := db.Transaction(func(tx *gorm.DB) error {
+		if err := tx.First(&course, id).Error; err != nil {
+			if err == gorm.ErrRecordNotFound {
+				c.JSON(http.StatusNotFound, gin.H{"error": "Course not found"})
+				return err
+			}
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return err
 		}
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
-		return
-	}
 
-	// Delete the course
-	if err := db.Delete(&course).Error; err != nil {
-		c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+		if err := tx.Delete(&course).Error; err != nil {
+			c.JSON(http.StatusInternalServerError, gin.H{"error": err.Error()})
+			return err
+		}
+
+		return nil
+	})
+
+	if err != nil {
+		c.JSON(http.StatusInternalServerError, gin.H{"error": "Failed to delete course"})
 		return
 	}
 
 	c.JSON(http.StatusOK, gin.H{"message": "Course deleted successfully"})
 }
+
 
 func GetCourseByCategoryID(c *gin.Context) {
     id := c.Param("id")

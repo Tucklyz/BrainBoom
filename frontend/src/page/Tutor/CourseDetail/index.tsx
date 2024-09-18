@@ -9,7 +9,7 @@ const { Title, Text } = Typography;
 function CourseDetail() {
   const location = useLocation();
   const course = location.state?.course;
-  console.log(course.Title);
+  console.log(course.ID);  
 
   const updatedAt = course.UpdatedAt;
   const formattedDate = moment(updatedAt).format('DD MMMM YYYY');

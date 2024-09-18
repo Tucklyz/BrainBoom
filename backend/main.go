@@ -23,13 +23,6 @@ func main() {
     
     router := r.Group("")
     {
-        // User Routes
-        router.GET("/users", controller.ListUsers)
-        router.GET("/user/:id", controller.GetUser)
-        router.POST("/users", controller.CreateUser)
-        router.PATCH("/users", controller.UpdateUser)
-        router.DELETE("/users/:id", controller.DeleteUser)
-        
         // Course Routes
         router.GET("/courses", controller.ListCourse)
         router.GET("/courses/:id", controller.GetCourse)

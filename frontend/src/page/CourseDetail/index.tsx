@@ -10,7 +10,7 @@ function CourseDetail() {
   const navigate = useNavigate();
   const location = useLocation();
   const course = location.state?.course;
-  console.log(course.Title);
+  console.log(course.ID);
 
   const updatedAt = course.UpdatedAt;
   const formattedDate = moment(updatedAt).format('DD MMMM YYYY');
@@ -93,6 +93,7 @@ function CourseDetail() {
                 padding: '20px',
               }}
             >
+            {course.ID}
               <Title level={2}>{course.Title || "Course Title"}</Title>
               <Text
                 style={{

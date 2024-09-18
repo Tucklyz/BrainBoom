@@ -3,7 +3,7 @@ import HeaderComponent from '../../components/header';
 import { Button, Input, Card, Row, Col, Typography, Space } from 'antd';
 import { EditOutlined, DeleteOutlined } from '@ant-design/icons';
 import { Link, useNavigate } from 'react-router-dom';
-import { GetCourseByTutorID } from '../../services/https';
+import { GetCourseByTutorID, DeleteCourse } from '../../services/https';
 import { CourseInterface } from '../../interfaces/ICourse';
 
 const { Search } = Input;
@@ -12,13 +12,25 @@ const { Text, Title } = Typography;
 function Tutor() {
   const [courses, setCourses] = useState<CourseInterface[]>([]);
   const [loading, setLoading] = useState<boolean>(true);
-  const tutorID = 1; // เปลี่ยนเป็น tutor ID ที่ต้องการ
+  const tutorID = 1; 
 
   const navigate = useNavigate();
 
   const handleCourseClick = (course: CourseInterface) => {
     navigate(`/tutor/${course.ID}`, { state: { course } });
   };
+
+  const deleteCourse = async (courseID: number) => {
+    try {
+      const response = await DeleteCourse(courseID);
+      console.log('API response:', response);
+      setCourses(courses.filter(course => course.ID !== courseID));
+      console.log(`Course with ID ${courseID} deleted successfully`);
+    } catch (error) {
+      console.error('Error deleting course:', error);
+    }
+  };
+  
 
   useEffect(() => {
     const fetchCourses = async () => {
@@ -111,7 +123,7 @@ function Tutor() {
                   hoverable
                   actions={[
                     <Link to={`/tutor/edit/${course.ID}`} key="edit"><EditOutlined /></Link>,
-                    <DeleteOutlined key="delete" />,
+                    <DeleteOutlined key="delete" onClick={() => deleteCourse(course.ID || 0)} />,
                   ]}
                 >
                   <div key={course.ID} onClick={() => handleCourseClick(course)}>
